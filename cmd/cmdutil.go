@@ -1,6 +1,8 @@
-package util
+package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+)
 
 type CommandGroup struct {
 	Message  string

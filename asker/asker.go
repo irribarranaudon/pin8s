@@ -10,21 +10,41 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func ShowContextsSurvey(names []string, selected string) string {
+type Answers struct {
+	Context string
+	Pod     string
+	Action  string
+}
+
+type Optional func(f *survey.Select)
+
+func WithDefaultValue(selected string) Optional {
+	return func(f *survey.Select) {
+		f.Default = selected
+	}
+}
+
+func ShowSurvey(names []string, name string, selected ...Optional) Answers {
+
+	config := &survey.Select{
+		Message: "select " + name + ":",
+		Options: names,
+	}
+
+	for _, optional := range selected {
+		optional(config)
+	}
+
 	qs := []*survey.Question{
 		{
-			Name: "context",
-			Prompt: &survey.Select{
-				Message: "select a context:",
-				Options: names,
-				Default: selected,
-			},
+			Name:   name,
+			Prompt: config,
 			Validate: func(val interface{}) error {
 				b, ok := val.(core.OptionAnswer)
 				if !ok {
 					return errors.New("error in cast response")
 				}
-				if slices.Contains(names, b.Value) {
+				if !slices.Contains(names, b.Value) {
 					return errors.New("cannot be different than the options listed")
 				}
 				return nil
@@ -32,14 +52,15 @@ func ShowContextsSurvey(names []string, selected string) string {
 		},
 	}
 
-	answers := struct {
-		ContextName string `survey:"context"`
-	}{}
+	answers := Answers{}
+	Ask(qs, &answers)
+	return answers
+}
 
-	err := survey.Ask(qs, &answers)
+func Ask(qs []*survey.Question, answers *Answers) {
+	err := survey.Ask(qs, answers)
 	if err != nil {
 		fmt.Println(err.Error())
 		log.Fatalln("Error in ASK survey")
 	}
-	return answers.ContextName
 }
