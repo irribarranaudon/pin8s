@@ -1,4 +1,4 @@
-package cmd
+package config
 
 import (
 	"pain/pin8s/asker"
@@ -7,9 +7,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func (cmd *pin8sCmd) NewCmdConfig() *cobra.Command {
+func NewCmdConfig(c *client.K8sClient) *cobra.Command {
 
-	runner := NewConfigRunner(cmd.client)
+	runner := NewConfigRunner(c)
 
 	configCmd := &cobra.Command{
 		Use:   "config",

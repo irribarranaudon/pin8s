@@ -1,4 +1,4 @@
-package cmd
+package pod
 
 import (
 	"errors"
@@ -9,9 +9,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func (cmd *pin8sCmd) NewCmdPod() *cobra.Command {
+func NewCmdPod(c *client.K8sClient) *cobra.Command {
 
-	runner := NewConfigPod(cmd.client)
+	runner := NewConfigPod(c)
 
 	podsCmd := &cobra.Command{
 		Use:   "pod",
@@ -41,6 +41,13 @@ func NewConfigPod(c *client.K8sClient) *podRunner {
 	}
 }
 
+func args(cmd *cobra.Command, args []string) error {
+	if len(args) > 1 || len(args) == 0 {
+		return errors.New("an namespaces argument is expected")
+	}
+	return nil
+}
+
 func (r *podRunner) run(cmd *cobra.Command, args []string) {
 	resultLine := r.client.Pod.ListPods(args[0])
 	var filteredPods []string
@@ -63,13 +70,6 @@ func (r *podRunner) excecutePodAction(ns, podname, answer string, actions []stri
 	default: //delete
 		r.client.Pod.DeletePod(ns, podname)
 	}
-}
-
-func args(cmd *cobra.Command, args []string) error {
-	if len(args) > 1 || len(args) == 0 {
-		return errors.New("requires at least one arg")
-	}
-	return nil
 }
 
 func (o *PodOptions) PodOptionsSetter(cmd *cobra.Command, args []string) error {

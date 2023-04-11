@@ -2,6 +2,7 @@ package client
 
 import (
 	"pain/pin8s/client/config"
+	"pain/pin8s/client/deploy"
 	"pain/pin8s/client/pod"
 
 	"k8s.io/cli-runtime/pkg/genericclioptions"
@@ -13,6 +14,7 @@ import (
 type K8sClient struct {
 	Pod    pod.Pod
 	Config config.Config
+	Deploy deploy.Deploy
 }
 
 func NewK8sClient() (*K8sClient, error) {
@@ -23,10 +25,12 @@ func NewK8sClient() (*K8sClient, error) {
 
 	pod := pod.NewPodClient(client)
 	config := config.NewConfigClient(clientcmd.NewDefaultPathOptions())
+	deployment := deploy.NewDeployClient(client)
 
 	return &K8sClient{
 		Pod:    pod,
 		Config: config,
+		Deploy: deployment,
 	}, nil
 }
 

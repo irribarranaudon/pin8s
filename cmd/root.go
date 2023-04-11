@@ -4,17 +4,20 @@ import (
 	"fmt"
 	"os"
 	"pain/pin8s/client"
+	"pain/pin8s/cmd/config"
+	"pain/pin8s/cmd/deploy"
+	"pain/pin8s/cmd/pod"
 
 	"github.com/spf13/cobra"
 )
 
-type pin8sCmd struct {
-	client *client.K8sClient
+type Pin8sCmd struct {
+	Client *client.K8sClient
 }
 
-func newPpin8sCommand(client *client.K8sClient) *pin8sCmd {
-	return &pin8sCmd{
-		client: client,
+func newPpin8sCommand(client *client.K8sClient) *Pin8sCmd {
+	return &Pin8sCmd{
+		Client: client,
 	}
 }
 
@@ -40,8 +43,8 @@ func loadCommand() *cobra.Command {
 
 	rootCmd := &cobra.Command{
 		Use:   "pin8s",
-		Short: "Hugo is a very fast static site generator",
-		Long:  `A basic command tool utility for interactive basic operations with kubectl`,
+		Short: "pin8s is a utility tool for basic k8s operations",
+		Long:  `A basic command tool utility for interactive basic k8s operations`,
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("Iniciando")
 		},
@@ -51,8 +54,9 @@ func loadCommand() *cobra.Command {
 		{
 			Message: "Basic Commands",
 			Commands: []*cobra.Command{
-				cmd.NewCmdConfig(),
-				cmd.NewCmdPod(),
+				config.NewCmdConfig(cmd.Client),
+				pod.NewCmdPod(cmd.Client),
+				deploy.NewCmdDeploy(cmd.Client),
 			},
 		},
 	}

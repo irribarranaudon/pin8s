@@ -1,6 +1,7 @@
 package pod
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"io"
@@ -50,7 +51,7 @@ func (c *PodClient) DeletePod(ns, podname string) {
 }
 
 func (c *PodClient) Logs(ns, podname string) {
-	req := c.client.CoreV1().Pods(ns).GetLogs(podname, &v1.PodLogOptions{})
+	req := c.client.CoreV1().Pods(ns).GetLogs(podname, &v1.PodLogOptions{Follow: true})
 
 	stream, err := req.Stream(context.TODO())
 	if err != nil {
@@ -58,19 +59,15 @@ func (c *PodClient) Logs(ns, podname string) {
 	}
 	defer stream.Close()
 
+	r := bufio.NewReader(stream)
 	for {
-		buf := make([]byte, 2000)
-		numBytes, err := stream.Read(buf)
-		if numBytes == 0 {
-			continue
-		}
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatal(err)
-		}
-		message := string(buf[:numBytes])
+		bytes, err := r.ReadBytes('\n')
+		message := string(bytes)
 		fmt.Print(message)
+		if err != nil {
+			if err != io.EOF {
+				log.Fatal(err)
+			}
+		}
 	}
 }
