@@ -22,15 +22,12 @@ func newPpin8sCommand(client *client.K8sClient) *Pin8sCmd {
 }
 
 func Execute() {
-
 	rootCmd := loadCommand()
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 }
-
-//conn := client.InitConnection(k8sCfg)
 
 func loadCommand() *cobra.Command {
 	client, err := client.NewK8sClient()

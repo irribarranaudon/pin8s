@@ -43,7 +43,7 @@ func NewConfigPod(c *client.K8sClient) *podRunner {
 
 func args(cmd *cobra.Command, args []string) error {
 	if len(args) > 1 || len(args) == 0 {
-		return errors.New("an namespaces argument is expected")
+		return errors.New("a namespace argument is required")
 	}
 	return nil
 }

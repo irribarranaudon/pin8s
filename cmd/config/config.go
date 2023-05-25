@@ -12,7 +12,7 @@ func NewCmdConfig(c *client.K8sClient) *cobra.Command {
 	runner := NewConfigRunner(c)
 
 	configCmd := &cobra.Command{
-		Use:   "config",
+		Use:   "context",
 		Short: "Config for k8s contexts",
 		Long:  `Config for select k8s contexts interactively`,
 		Run:   runner.run,

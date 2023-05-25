@@ -53,11 +53,11 @@ func ShowSurvey(names []string, name string, selected ...Optional) Answers {
 	}
 
 	answers := Answers{}
-	Ask(qs, &answers)
+	ask(qs, &answers)
 	return answers
 }
 
-func Ask(qs []*survey.Question, answers *Answers) {
+func ask(qs []*survey.Question, answers *Answers) {
 	err := survey.Ask(qs, answers)
 	if err != nil {
 		fmt.Println(err.Error())
